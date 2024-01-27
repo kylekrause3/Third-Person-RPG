@@ -289,8 +289,8 @@ MonoBehaviour:
   distance: 10
   StartingAngle: 45
   viewportToRotationRatio: 270
-  MinXRotation: -89
-  MaxXRotation: 89
+  MinXRotation: -89.99
+  MaxXRotation: 89.99
 --- !u!1 &2462128537409508006
 GameObject:
   m_ObjectHideFlags: 0

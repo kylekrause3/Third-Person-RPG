@@ -38,39 +38,29 @@ public class CamOrbit : MonoBehaviour
     {
         cam.transform.position = Player.position;
 
-        if (Input.GetMouseButtonDown(1))
-        {
-            prevMousePos = cam.ScreenToViewportPoint(Input.mousePosition);
-        }
         if (Input.GetMouseButton(1))
         {
             viewportDelta = prevMousePos - cam.ScreenToViewportPoint(Input.mousePosition);
 
             rotation.x = viewportDelta.y * viewportToRotationRatio;//pos is mouse down, neg is mouse up (cam up, cam down)
             rotation.y = viewportDelta.x * viewportToRotationRatio;//pos is mouse right, neg is mouse left (cam right, cam left)
-            if (rotation.x > 0 && TrackedXRotation < MaxXRotation)
+            TrackedXRotation += rotation.x;
+            if(TrackedXRotation > MaxXRotation)
             {
-                if (rotation.x + TrackedXRotation > MaxXRotation)
-                {
-                    rotation.x = MaxXRotation - TrackedXRotation;
-                }
-                TrackedXRotation += rotation.x;
+                rotation.x = MaxXRotation - (TrackedXRotation - rotation.x); //this is the amount we went over the max
+                TrackedXRotation = MaxXRotation;
             }
-            else if (rotation.x < 0 && TrackedXRotation >= MinXRotation)
+            else if(TrackedXRotation < MinXRotation)
             {
-                if (rotation.x + TrackedXRotation < MinXRotation)
-                {
-                    rotation.x = MinXRotation - TrackedXRotation;
-                }
-                TrackedXRotation += rotation.x;
+                rotation.x = MinXRotation - (TrackedXRotation - rotation.x); //this is the amount we went over the min
+                TrackedXRotation = MinXRotation;
             }
             cam.transform.Rotate(new Vector3(1, 0, 0), rotation.x); //up and down
             cam.transform.Rotate(new Vector3(0,-1,0), rotation.y, Space.World); //left and right
             
         }
         float appliedDistance = distance;
-        // layermask for layer 6 (map)
-        int mask = 1 << 6;
+        LayerMask mask = 1 << 6; // to do more layers, you would do 1 << 6 | 1 << <num> | ...;
         // raycast from player to camera to see if there is anything in the way
         RaycastHit hit;
         if (Physics.SphereCast(Player.position, 0.5f, cam.transform.TransformDirection(Vector3.back), out hit, distance, mask))
