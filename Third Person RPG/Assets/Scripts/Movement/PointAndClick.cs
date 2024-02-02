@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 //float distance = Vector3.Distance (object1.transform.position, object2.transform.position);
-public class PointAndClick : MonoBehaviour
+public class PointAndClick : Movement
 {
     public Camera cam;
     private NavMeshAgent player;
@@ -12,7 +12,6 @@ public class PointAndClick : MonoBehaviour
 
     Interactable focus;
 
-    private bool walk = true;
     private void Awake()
     {
         player = GetComponent<NavMeshAgent>();
@@ -124,14 +123,10 @@ public class PointAndClick : MonoBehaviour
             player.speed = playerSpeed * x;
     }
 
-    public void toggleWalk()
+    public override void teleport(Vector3 position)
     {
-        walk = !walk;
+        player.Warp(position);
     }
-    
-    public void toggleWalk(bool x)
-    {
-        walk = x;
-    }
+
     //player.stoppingDistance = attack range
 }

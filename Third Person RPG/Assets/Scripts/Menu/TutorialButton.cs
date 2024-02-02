@@ -1,14 +1,22 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class TutorialButton : MonoBehaviour
 {
-    private PointAndClick player;
+    private Movement playerMovement;
     public void d()
     {
-        player = GameObject.Find("Player").GetComponent<PointAndClick>();
-        player.toggleWalk(true);
+        playerMovement = GameObject.Find("Player").GetComponent<Movement>();
+        try
+        {
+            playerMovement.toggleWalk(true);
+        }
+        catch ( NullReferenceException e)
+        {
+            Debug.Log("Player not found: " + e);
+        }
         Destroy(transform.parent.gameObject);
     }
 

@@ -14,7 +14,7 @@ public class Spawn : MonoBehaviour
         try
         {
             spawn = GameObject.FindWithTag("Player Spawn").transform;
-            GetComponent<NavMeshAgent>().Warp(spawn.position);
+            GetComponent<Movement>().teleport(spawn.position);
         }
         catch (NullReferenceException)
         {
