@@ -12,7 +12,7 @@ public class CamOrbit : MonoBehaviour
     public bool pncEnabled = true;
 
     [Header("SmoothDamp Settings")]
-    public float smoothTime = 0.3f;
+    public float smoothTime = 0.075f;
     private Vector3 smoothVelocity = Vector3.zero;
 
     [Header("PNC Settings")]
@@ -36,10 +36,11 @@ public class CamOrbit : MonoBehaviour
     Vector3 prevMousePos;
     Vector3 viewportDelta;
 
-    private Vector3 previousTargetPosition;
+    private Vector3 previousCamPosition;
 
     private Vector2 rotation;
     private float TrackedXRotation;
+    private float TrackedYRotation; // only used for wasd
     private float MinXRotation = -89.99f;
     private float MaxXRotation = 89.99f;
     
@@ -53,7 +54,7 @@ public class CamOrbit : MonoBehaviour
             TrackedXRotation = StartingAngle;
             cam.transform.Rotate(new Vector3(1, 0, 0), StartingAngle);
             cam.transform.position = Player.position;
-            previousTargetPosition = Player.position;
+            previousCamPosition = Player.position;
         }
         else
         {
@@ -63,8 +64,9 @@ public class CamOrbit : MonoBehaviour
             }
             orbit_delegate = WASDOrbit;
             TrackedXRotation = 0;
+            TrackedYRotation = 0;
             cam.transform.position = customFollowTarget.position;
-            previousTargetPosition = customFollowTarget.position;
+            previousCamPosition = customFollowTarget.position;
         }
         cam.transform.Translate(new Vector3(0, 0, distance * -1f));
 
@@ -84,8 +86,7 @@ public class CamOrbit : MonoBehaviour
 
     private void PNCOrbit()
     {
-        cam.transform.position = Vector3.SmoothDamp(previousTargetPosition, Player.position, ref smoothVelocity, smoothTime); ;
-        previousTargetPosition = Player.position;
+        cam.transform.position = Vector3.SmoothDamp(previousCamPosition, Player.position, ref smoothVelocity, smoothTime); ;
 
         if (Input.GetMouseButton(1))
         {
@@ -117,6 +118,7 @@ public class CamOrbit : MonoBehaviour
             // if there is something in the way, move the camera to the hit point
             appliedDistance = Vector3.Distance(hit.point, Player.position);
         }
+        previousCamPosition = cam.transform.position;
         cam.transform.Translate(new Vector3(0, 0, appliedDistance * -1f));
 
         prevMousePos = cam.ScreenToViewportPoint(Input.mousePosition);
@@ -126,8 +128,7 @@ public class CamOrbit : MonoBehaviour
     private void WASDOrbit()
     {
 
-        cam.transform.position = Vector3.SmoothDamp(previousTargetPosition, customFollowTarget.position, ref smoothVelocity, smoothTime); ;
-        previousTargetPosition = customFollowTarget.position;
+        cam.transform.position = Vector3.SmoothDamp(previousCamPosition, customFollowTarget.position, ref smoothVelocity, smoothTime);
 
         if (Input.GetKeyDown(KeyCode.C))
         {
@@ -144,10 +145,11 @@ public class CamOrbit : MonoBehaviour
             }
         }
 
-        rotation.y = Input.GetAxis("Mouse X") * sensitivity * Time.deltaTime * -1f;//pos is mouse down, neg is mouse up (cam up, cam down)
-        rotation.x = Input.GetAxis("Mouse Y") * sensitivity * Time.deltaTime * -1f;//pos is mouse right, neg is mouse left (cam right, cam left)
+        rotation.y = Input.GetAxis("Mouse X") * sensitivity * Time.deltaTime;//pos is mouse right, neg is mouse left (cam right, cam left)
+        rotation.x = Input.GetAxis("Mouse Y") * sensitivity * Time.deltaTime * -1f;//pos is mouse down, neg is mouse up (cam up, cam down) 
 
         TrackedXRotation += rotation.x;
+        TrackedYRotation += rotation.y;
         if (TrackedXRotation > MaxXRotation)
         {
             rotation.x = MaxXRotation - (TrackedXRotation - rotation.x); //this is the amount we went over the max
@@ -162,8 +164,8 @@ public class CamOrbit : MonoBehaviour
         if(dorotation)
         {
             cam.transform.Rotate(new Vector3(1, 0, 0), rotation.x); //up and down
-            cam.transform.Rotate(new Vector3(0, -1, 0), rotation.y, Space.World); //left and right
-            Player.transform.Rotate(new Vector3(0, -1, 0), rotation.y, Space.World); //left and right
+            cam.transform.Rotate(new Vector3(0, 1, 0), rotation.y, Space.World); //left and right
+            Player.transform.Rotate(new Vector3(0, 1, 0), rotation.y, Space.World); //left and right
         }
 
         float appliedDistance = distance;
@@ -175,6 +177,7 @@ public class CamOrbit : MonoBehaviour
             // if there is something in the way, move the camera to the hit point
             appliedDistance = Vector3.Distance(hit.point, customFollowTarget.position);
         }
+        previousCamPosition = cam.transform.position;
         cam.transform.Translate(new Vector3(0, 0, appliedDistance * -1f));
     }
 

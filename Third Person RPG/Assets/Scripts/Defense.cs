@@ -58,23 +58,27 @@ public class Defense : MonoBehaviour //EnemyDefense
     }
     public void onDeDefense()
     {
-        switch (defenseStyle)
+        if (agent.isActiveAndEnabled)
         {
-            case DefensiveStyle.Passive:
-                agent.speed *= 2f;
-                break;
-            case DefensiveStyle.Aggressive:
-                attack?.endAttack();
-                agent.stoppingDistance = 0;
-                patrol?.GotoNextPoint();
-                break;
-            case DefensiveStyle.Scared:
-                break;
-            default:
-                break;
+            switch (defenseStyle)
+            {
+                case DefensiveStyle.Passive:
+                    agent.speed *= 2f;
+                    break;
+                case DefensiveStyle.Aggressive:
+                    attack?.endAttack();
+                    agent.stoppingDistance = 0;
+                    patrol?.GotoNextPoint();
+                    break;
+                case DefensiveStyle.Scared:
+                    break;
+                default:
+                    break;
+            }
+            doDefense = () => Debug.Log("doDefense has not been Assigned");
+            startUpdate = false;
         }
-        doDefense = () => Debug.Log("doDefense has not been Assigned");
-        startUpdate = false;
+
     }
 
     public void startDefense()
@@ -103,17 +107,12 @@ public class Defense : MonoBehaviour //EnemyDefense
 
     public void aggressiveDefense()
     {
-        
         if (this.GetComponent<Attack>() == null)
             return;
+        FaceTarget(attacker);
         attack.startAttack(attacker);
-        /*
-            player.stoppingDistance = radius * .9f;
-            player.updateRotation = false;
-        */
         agent.stoppingDistance = inventory.getWeaponRange() * 0.9f;
         agent.SetDestination(attacker.position);
-        FaceTarget(attacker);
     }
 
     public Transform getAttacker()

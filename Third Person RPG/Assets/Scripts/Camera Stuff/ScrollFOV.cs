@@ -100,4 +100,9 @@ public class ScrollFOV : MonoBehaviour
             scroll_delegate = Distance_Scroll;
         }
     }
+
+    public bool getFOVEnabled()
+    {
+        return FOVEnabled;
+    }
 }
