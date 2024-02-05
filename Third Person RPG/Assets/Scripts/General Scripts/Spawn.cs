@@ -18,8 +18,7 @@ public class Spawn : MonoBehaviour
         }
         catch (NullReferenceException)
         {
-            Debug.Log("Spawn.cs: No defined player spawn point. (Does player spawn have 'Player Spawn' tag?)");
-            GetComponent<NavMeshAgent>().Warp(new Vector3(0, 0, 0));
+            Debug.Log("Spawn.cs: No defined player spawn point. (Does player spawn have 'Player Spawn' tag? Does player have a Movement script?)");
         }
     }
 }
